@@ -72,8 +72,60 @@ class PreferencesManager(context: Context) {
         set(value) = prefs.edit().putString("personality", value).apply()
 
     var wakeWord: String
-        get() = prefs.getString("wake_word", "Hey Zara!") ?: "Hey Zara!"
+        get() = prefs.getString("wake_word", "ANONYMOUS STAR") ?: "ANONYMOUS STAR"
         set(value) = prefs.edit().putString("wake_word", value).apply()
+
+    var picovoiceEnabled: Boolean
+        get() = prefs.getBoolean("picovoice_enabled", true)
+        set(value) = prefs.edit().putBoolean("picovoice_enabled", value).apply()
+
+    var offlineWakeWordBeta: Boolean
+        get() = prefs.getBoolean("offline_wakeword_beta", true)
+        set(value) = prefs.edit().putBoolean("offline_wakeword_beta", value).apply()
+
+    var heyGoogleVariant: Boolean
+        get() = prefs.getBoolean("hey_google_variant", false)
+        set(value) = prefs.edit().putBoolean("hey_google_variant", value).apply()
+
+    var auraSignature: Boolean
+        get() = prefs.getBoolean("aura_signature", true)
+        set(value) = prefs.edit().putBoolean("aura_signature", true).apply()
+
+    var auraCore: Boolean
+        get() = prefs.getBoolean("aura_core", true)
+        set(value) = prefs.edit().putBoolean("aura_core", value).apply()
+
+    var paraLockMode: Boolean
+        get() = prefs.getBoolean("para_lock_mode", true)
+        set(value) = prefs.edit().putBoolean("para_lock_mode", value).apply()
+
+    var stayUnlockedMinutes: Int
+        get() = prefs.getInt("stay_unlocked_minutes", 15)
+        set(value) = prefs.edit().putInt("stay_unlocked_minutes", value).apply()
+
+    var voiceAlertDefault: Boolean
+        get() = prefs.getBoolean("voice_alert_default", true)
+        set(value) = prefs.edit().putBoolean("voice_alert_default", value).apply()
+
+    var voiceMatchEnabled: Boolean
+        get() = prefs.getBoolean("voice_match_enabled", true)
+        set(value) = prefs.edit().putBoolean("voice_match_enabled", value).apply()
+
+    var vibrationAlert: Boolean
+        get() = prefs.getBoolean("vibration_alert", true)
+        set(value) = prefs.edit().putBoolean("vibration_alert", value).apply()
+
+    var sirenAlarm: Boolean
+        get() = prefs.getBoolean("siren_alarm", true)
+        set(value) = prefs.edit().putBoolean("siren_alarm", value).apply()
+
+    var fullScreenWarning: Boolean
+        get() = prefs.getBoolean("full_screen_warning", true)
+        set(value) = prefs.edit().putBoolean("full_screen_warning", value).apply()
+
+    var floatLockMode: Boolean
+        get() = prefs.getBoolean("float_lock_mode", true)
+        set(value) = prefs.edit().putBoolean("float_lock_mode", value).apply()
 
     var pitch: Float
         get() = prefs.getFloat("voice_pitch", 1.0f)
@@ -154,4 +206,12 @@ class PreferencesManager(context: Context) {
     var isFirstLaunch: Boolean
         get() = prefs.getBoolean("is_first_launch", true)
         set(value) = prefs.edit().putBoolean("is_first_launch", value).apply()
+
+    fun hasAnyApiKey(): Boolean {
+        return groqApiKey.isNotBlank() ||
+               geminiApiKey.isNotBlank() ||
+               deepseekApiKey.isNotBlank() ||
+               openrouterApiKey.isNotBlank() ||
+               tavilyApiKey.isNotBlank()
+    }
 }

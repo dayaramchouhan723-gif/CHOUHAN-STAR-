@@ -36,6 +36,8 @@ fun OrbSettingsScreen(
     var mode by remember { mutableStateOf(prefs.orbMode) }
     var presence by remember { mutableStateOf(prefs.systemPresence) }
     var aura by remember { mutableStateOf(prefs.auraBorder) }
+    var signature by remember { mutableStateOf(prefs.auraSignature) }
+    var core by remember { mutableStateOf(prefs.auraCore) }
     var haptic by remember { mutableStateOf(prefs.hapticFeedback) }
 
     Scaffold(
@@ -74,7 +76,10 @@ fun OrbSettingsScreen(
                     hueShift = hueShift,
                     orbMode = mode,
                     systemNodes = presence,
-                    auraBorder = aura
+                    auraBorder = aura,
+                    auraSignature = signature,
+                    auraCore = core,
+                    hapticFeedback = haptic
                 )
             }
 
@@ -146,10 +151,10 @@ fun OrbSettingsScreen(
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         ColorPreset(Color(0xFFFF1744), "Red") { hueShift = 0f; prefs.orbHueShift = 0f }
-                        ColorPreset(Color(0xFFFFD600), "Yellow") { hueShift = 70f; prefs.orbHueShift = 70f }
-                        ColorPreset(Color(0xFF00E676), "Green") { hueShift = 130f; prefs.orbHueShift = 130f }
-                        ColorPreset(Color(0xFF7C4DFF), "Purple") { hueShift = 200f; prefs.orbHueShift = 200f }
-                        ColorPreset(Color(0xFF00E5FF), "Cyan") { hueShift = 260f; prefs.orbHueShift = 260f }
+                        ColorPreset(Color(0xFFFFD600), "Yellow") { hueShift = 60f; prefs.orbHueShift = 60f }
+                        ColorPreset(Color(0xFF00E676), "Green") { hueShift = 120f; prefs.orbHueShift = 120f }
+                        ColorPreset(Color(0xFF00E5FF), "Cyan") { hueShift = 180f; prefs.orbHueShift = 180f }
+                        ColorPreset(Color(0xFF7C4DFF), "Purple") { hueShift = 270f; prefs.orbHueShift = 270f }
                     }
                 }
             }
@@ -206,7 +211,17 @@ fun OrbSettingsScreen(
                         prefs.auraBorder = it
                     }
                     Divider(color = BlackBackground, thickness = 1.dp)
-                    ToggleRow("Haptic Feedback on Touch", haptic) {
+                    ToggleRow("Aura Signature Rings", signature) {
+                        signature = it
+                        prefs.auraSignature = it
+                    }
+                    Divider(color = BlackBackground, thickness = 1.dp)
+                    ToggleRow("Aura Core Gradient", core) {
+                        core = it
+                        prefs.auraCore = it
+                    }
+                    Divider(color = BlackBackground, thickness = 1.dp)
+                    ToggleRow("Haptic Feedback ON", haptic) {
                         haptic = it
                         prefs.hapticFeedback = it
                     }

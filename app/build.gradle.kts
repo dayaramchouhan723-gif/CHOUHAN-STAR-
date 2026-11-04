@@ -16,7 +16,7 @@ android {
     applicationId = "com.anonymous.star"
     minSdk = 24
     targetSdk = 34
-    versionCode = 1
+    versionCode = 227
     versionName = "2.2.7"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

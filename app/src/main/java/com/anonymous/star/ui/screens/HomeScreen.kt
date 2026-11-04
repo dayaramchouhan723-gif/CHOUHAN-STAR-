@@ -58,6 +58,8 @@ fun HomeScreen(
     var currentTime by remember { mutableStateOf(timeFormat.format(Date())) }
     var currentDate by remember { mutableStateOf(dateFormat.format(Date())) }
 
+    var showOfflineResponse by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -153,8 +155,75 @@ fun HomeScreen(
                 orbMode = prefs.orbMode,
                 systemNodes = prefs.systemPresence,
                 auraBorder = prefs.auraBorder,
-                onClick = { onNavigateTo("orb_settings") }
+                auraSignature = prefs.auraSignature,
+                auraCore = prefs.auraCore,
+                hapticFeedback = prefs.hapticFeedback,
+                onClick = {
+                    if (!prefs.hasAnyApiKey()) {
+                        showOfflineResponse = true
+                    } else {
+                        onNavigateTo("orb_settings")
+                    }
+                }
             )
+        }
+
+        // Offline Fallback AI Response Card (When NO KEY)
+        AnimatedVisibility(
+            visible = showOfflineResponse,
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(horizontal = 24.dp)
+        ) {
+            Surface(
+                color = DarkCard.copy(alpha = 0.96f),
+                shape = RoundedCornerShape(20.dp),
+                border = androidx.compose.foundation.BorderStroke(1.5.dp, CrimsonPrimary),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier.padding(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.SmartToy, contentDescription = null, tint = CrimsonPrimary)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Anonymous Star Response", color = Color.White, fontWeight = FontWeight.Bold)
+                        }
+                        IconButton(onClick = { showOfflineResponse = false }) {
+                            Icon(Icons.Default.Close, contentDescription = "Close", tint = Color.Gray)
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = "Bolo Vikash, main yahin hoon, API key nahi lagi",
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        onClick = {
+                            showOfflineResponse = false
+                            onNavigateTo("api_vault")
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = CrimsonPrimary),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Configure API Keys in Vault", color = Color.White)
+                    }
+                }
+            }
         }
 
         // Wallpaper Switcher Drawer (if active)

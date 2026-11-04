@@ -14,6 +14,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -29,8 +31,13 @@ fun PulsingOrb(
     orbMode: String = "Energy", // Classic, Energy, Neon
     systemNodes: Boolean = true,
     auraBorder: Boolean = true,
+    auraSignature: Boolean = true,
+    auraCore: Boolean = true,
+    hapticFeedback: Boolean = true,
     onClick: () -> Unit = {}
 ) {
+    val haptics = LocalHapticFeedback.current
+
     val infiniteTransition = rememberInfiniteTransition(label = "OrbPulse")
     
     val pulseAnim by infiniteTransition.animateFloat(
@@ -53,24 +60,25 @@ fun PulsingOrb(
         label = "Rotation"
     )
 
-    val baseColor = when {
-        hueShift > 240 -> Color(0xFF00E5FF) // Cyan
-        hueShift > 180 -> Color(0xFF7C4DFF) // Purple
-        hueShift > 120 -> Color(0xFF00E676) // Green
-        hueShift > 60 -> Color(0xFFFFD600)  // Gold
-        else -> Color(0xFFFF1744)           // Crimson Red
-    }
+    // Dynamic HSV color calculation for smooth hue shifts
+    val normalizedHue = (hueShift % 360f + 360f) % 360f
+    val baseColor = Color.hsv(hue = normalizedHue, saturation = 0.88f, value = 1.0f)
 
-    val innerGlowColor = baseColor.copy(alpha = 0.8f)
-    val outerAuraColor = baseColor.copy(alpha = 0.25f)
+    val innerGlowColor = baseColor.copy(alpha = 0.85f)
+    val outerAuraColor = baseColor.copy(alpha = 0.35f)
 
-    val actualSize = baseSize * sizeScale
+    val actualSize = baseSize * sizeScale.coerceIn(0.5f, 2.0f)
 
     Box(
         modifier = modifier
             .size(actualSize)
             .testTag("pulsing_orb")
-            .clickable { onClick() },
+            .clickable {
+                if (hapticFeedback) {
+                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                }
+                onClick()
+            },
         contentAlignment = Alignment.Center
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
@@ -91,27 +99,39 @@ fun PulsingOrb(
 
                 // Cyber Ring
                 drawCircle(
-                    color = baseColor.copy(alpha = 0.4f),
+                    color = baseColor.copy(alpha = 0.5f),
                     center = centerOffset,
                     radius = radius * 1.15f,
                     style = Stroke(width = 3.dp.toPx())
                 )
             }
 
+            // Aura Signature Rings
+            if (auraSignature) {
+                drawCircle(
+                    color = baseColor.copy(alpha = 0.25f),
+                    center = centerOffset,
+                    radius = radius * 1.3f,
+                    style = Stroke(width = 1.5.dp.toPx())
+                )
+            }
+
             // Core Gradient Sphere
-            drawCircle(
-                brush = Brush.radialGradient(
-                    colors = when (orbMode) {
-                        "Neon" -> listOf(Color.White, baseColor, Color.Black)
-                        "Classic" -> listOf(baseColor, baseColor.copy(alpha = 0.5f), Color.Transparent)
-                        else -> listOf(Color.White, innerGlowColor, baseColor.copy(alpha = 0.3f))
-                    },
+            if (auraCore) {
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        colors = when (orbMode) {
+                            "Neon" -> listOf(Color.White, baseColor, Color.Black)
+                            "Classic" -> listOf(baseColor, baseColor.copy(alpha = 0.5f), Color.Transparent)
+                            else -> listOf(Color.White, innerGlowColor, baseColor.copy(alpha = 0.3f))
+                        },
+                        center = centerOffset,
+                        radius = radius
+                    ),
                     center = centerOffset,
                     radius = radius
-                ),
-                center = centerOffset,
-                radius = radius
-            )
+                )
+            }
 
             // Orbital System Nodes
             if (systemNodes) {
